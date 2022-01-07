@@ -1,38 +1,39 @@
-import { useEffect, useState } from "react";
-
-function Hello() {
-  useEffect(() => {
-    console.log("hi :)"); //Hello가 불릴때 실행
-    return () => console.log("bye :("); //Hello component가 destroy될때 실행. -> clean up
-  }, []);
-  return <h1>HELLO</h1>;
-}
+import { useState } from "react";
 
 function App() {
-  const [counter, setCounter] = useState(0);
-  const [keyword, setKeyword] = useState("");
-  const onClick = () => setCounter((current) => current + 1);
-  const onChange = (event) => setKeyword(event.target.value);
-  useEffect(() => console.log("API rendered...."), []); //app이 실행될때 code 실행
-  useEffect(() => console.log("i render when Keyword changes"), [keyword]); //keyword가 변할때만 code 실행
-  useEffect(() => console.log("i render when Counter changes"), [counter]); //counter가 변할때만 code 실행
-
-  const [showing, setShowing] = useState(false);
-  const onShowClick = () => setShowing((current) => !current);
+  const [toDo, setToDo] = useState("");
+  const [toDos, setToDos] = useState([]);
+  const onChange = (event) => {
+    setToDo(event.target.value);
+  };
+  const onSubmit = (event) => {
+    event.preventDefault();
+    if (toDo === "") {
+      return;
+    }
+    setToDos((currentArray) => [toDo, ...currentArray]); //현재 todos 배열에 새로운 todo 추가.
+    setToDo("");
+  };
 
   return (
     <div>
-      {showing ? <Hello /> : null}
-      <button onClick={onShowClick}>{showing ? "HIDE" : "SHOW"}</button>
+      <h1>Task: {toDos.length}</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          value={toDo}
+          onChange={onChange}
+          placeholder="What's your today's plan?"
+        />
+        <br />
+        <button>Add</button>
+      </form>
       <hr />
-      <input
-        placeholder="search here"
-        onChange={onChange}
-        value={keyword}
-        type="text"
-      />
-      <h1>{counter}</h1>
-      <button onClick={onClick}>click me</button>
+      <ul>
+        {toDos.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }
